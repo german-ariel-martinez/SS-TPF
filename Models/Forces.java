@@ -104,6 +104,10 @@ public class Forces {
                     fxT += fn * enx + ft * (-eny) + ft2 * et2.first;
                     fyT += fn * eny + ft * enx + ft2 * et2.second;
                     fzT += fn * enz + ft * enz + ft2 * et2.third;
+                    if(fxT > 1000 || fyT > 1000 || fzT > 1000){
+                        System.out.println("ME fui a la mierda entre parts");
+                        System.exit(1);
+                    }
                 }
             }
         }
@@ -138,6 +142,10 @@ public class Forces {
             fxT += fn * enx + ft * (-eny) + ft2 * et2.first;
             fyT += fn * eny + ft * enx + ft2 * et2.second;
             fzT += fn * enz + ft * enz + ft2 * et2.third;
+            if(fxT > 1000 || fyT > 1000 || fzT > 1000){
+                System.out.println("ME fui a la mierda SUP");
+                System.exit(1);
+            }
         }
         ////////////////////////////////////////////
         //
@@ -157,8 +165,13 @@ public class Forces {
         // |                  |
         // |__________________|
         // 0  x>fx  x<wid-fx   wid
-        if(!(p.x > s.floorX && p.x < s.wid - s.floorX && p.z > s.floorZ && p.z < s.dep - s.floorZ) && p.getOverlap(inf) > 0 ) {
-            // Nos traemos FN y FT
+        if(check_outside_square(p, s) && p.getOverlap(inf) > 0 && !p.ignore){
+
+            // if(!(!check_outside_square(s.prevParticles.get(index),s) && p.getOverlap(inf) > 0)){
+
+            // }
+            // if(!(p.x >= s.floorX + p.r && p.x <= s.wid - s.floorX - p.r && p.z >= s.floorZ + p.r && p.z <= s.dep - s.floorZ - p.r) && p.getOverlap(inf) > 0 ) {
+                // Nos traemos FN y FT
             fn = getFN(p, inf, s);
             ft = getFT(p, inf, s);
             ft2 = getFT2(p, inf, s);
@@ -176,6 +189,16 @@ public class Forces {
             fxT += fn * enx + ft * (-eny) + ft2 * et2.first;
             fyT += fn * eny + ft * enx + ft2 * et2.second;
             fzT += fn * enz + ft * enz + ft2 * et2.third;
+            if(fxT > 1000 || fyT > 1000 || fzT > 1000){
+                System.out.println(fxT + " - " + fyT + " - " + fzT);
+                System.out.println(p.x + " - " + p.y + " - " + p.z);
+                System.out.println(s.prevParticles.get(index).x + " - " + s.prevParticles.get(index).y + " - " + s.prevParticles.get(index).z);
+                System.out.println(p.r);
+                System.out.println("ME fui a la mierda INF - " + p.getOverlap(inf));
+                System.exit(1);
+            }
+        } else if(!check_outside_square(p, s) && p.getOverlap(inf) > 0){
+            p.ignore = true;
         }
 
         if( p.getOverlap(izq) > 0 ) {
@@ -197,6 +220,10 @@ public class Forces {
             fxT += fn * enx + ft * (-eny) + ft2 * et2.first;
             fyT += fn * eny + ft * enx + ft2 * et2.second;
             fzT += fn * enz + ft * enz + ft2 * et2.third;
+            if(fxT > 1000 || fyT > 1000 || fzT > 1000){
+                System.out.println("ME fui a la mierda IZQ");
+                System.exit(1);
+            }
         }
 
         if( p.getOverlap(der) > 0 ) {
@@ -218,6 +245,10 @@ public class Forces {
             fxT += fn * enx + ft * (-eny) + ft2 * et2.first;
             fyT += fn * eny + ft * enx + ft2 * et2.second;
             fzT += fn * enz + ft * enz + ft2 * et2.third;
+            if(fxT > 1000 || fyT > 1000 || fzT > 1000){
+                System.out.println("ME fui a la mierda DER");
+                System.exit(1);
+            }
         }
         if( p.getOverlap(front) > 0 ) {
             // Nos traemos FN y FT
@@ -238,6 +269,10 @@ public class Forces {
             fxT += fn * enx + ft * (-eny) + ft2 * et2.first;
             fyT += fn * eny + ft * enx + ft2 * et2.second;
             fzT += fn * enz + ft * enz + ft2 * et2.third;
+            if(fxT > 1000 || fyT > 1000 || fzT > 1000){
+                System.out.println("ME fui a la mierda FRONT");
+                System.exit(1);
+            }
         }
         if( p.getOverlap(back) > 0 ) {
             // Nos traemos FN y FT
@@ -258,11 +293,16 @@ public class Forces {
             fxT += fn * enx + ft * (-eny) + ft2 * et2.first;
             fyT += fn * eny + ft * enx + ft2 * et2.second;
             fzT += fn * enz + ft * enz + ft2 * et2.third;
+            if(fxT > 1000 || fyT > 1000 || fzT > 1000){
+                System.out.println("ME fui a la mierda BACK");
+                System.exit(1);
+            }
         }
         fyT -= 9.8 * (p.m);
         return new Triple<Double,Double, Double>(fxT, fyT, fzT);
     }
-
-
     
+    static boolean check_outside_square(Particle p, Sylo s){
+        return (p.x <= s.floorX || p.x >= s.wid - s.floorX) && (p.z <= s.floorZ || p.z  >= s.dep - s.floorZ);
+    }
 }

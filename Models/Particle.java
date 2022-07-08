@@ -6,6 +6,7 @@ public class Particle {
     
     // Variables
     double x, y, z, vx, vy, vz, r, m;
+    boolean ignore;
 
     // Constructor
     public Particle (double x, double y, double z, double vx, double vy, double vz, double r, double m) {
@@ -17,6 +18,7 @@ public class Particle {
         this.vz = vz;
         this.r = r;
         this.m = m;
+        this.ignore = false;
     }
 
     public double getVelocity() { return Math.sqrt(vx*vx + vy*vy + vz*vz); }

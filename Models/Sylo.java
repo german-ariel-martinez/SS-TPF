@@ -115,7 +115,7 @@ public class Sylo {
         double radiusHigh = 0.05/2;
 
         double y_high = len;
-        double y_low = (2 * len)/5;
+        double y_low = (4 * len)/5;
         double x_high = wid;
         double z_high = dep;
         
