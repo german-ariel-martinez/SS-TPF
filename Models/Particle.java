@@ -9,7 +9,7 @@ public class Particle {
     boolean ignore;
 
     // Constructor
-    public Particle (double x, double y, double z, double vx, double vy, double vz, double r, double m) {
+    public Particle (double x, double y, double z, double vx, double vy, double vz, double r, double m, boolean ignore) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -18,7 +18,7 @@ public class Particle {
         this.vz = vz;
         this.r = r;
         this.m = m;
-        this.ignore = false;
+        this.ignore = ignore;
     }
 
     public double getVelocity() { return Math.sqrt(vx*vx + vy*vy + vz*vz); }

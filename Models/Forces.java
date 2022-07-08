@@ -113,12 +113,12 @@ public class Forces {
         }
 
         // Creamos las paredes que en este caso son particulas ...
-        Particle sup = new Particle(p.x, s.len, p.z, 0, 0, 0, 0, 0);
-        Particle der = new Particle(s.wid, p.y, p.z, 0, 0, 0, 0, 0);
-        Particle izq = new Particle(0, p.y, p.z, 0, 0, 0, 0, 0);
-        Particle front = new Particle(p.x, p.y, s.dep, 0, 0, 0, 0, 0);
-        Particle back = new Particle(p.x, p.y, 0, 0, 0, 0, 0, 0);
-        Particle inf = new Particle(p.x, 0, p.z, 0, 0, 0, 0, 0);
+        Particle sup = new Particle(p.x, s.len, p.z, 0, 0, 0, 0, 0, false);
+        Particle der = new Particle(s.wid, p.y, p.z, 0, 0, 0, 0, 0, false);
+        Particle izq = new Particle(0, p.y, p.z, 0, 0, 0, 0, 0, false);
+        Particle front = new Particle(p.x, p.y, s.dep, 0, 0, 0, 0, 0, false);
+        Particle back = new Particle(p.x, p.y, 0, 0, 0, 0, 0, 0, false);
+        Particle inf = new Particle(p.x, 0, p.z, 0, 0, 0, 0, 0, false);
 
 
         // Comparo contra las paredes ...
@@ -165,13 +165,12 @@ public class Forces {
         // |                  |
         // |__________________|
         // 0  x>fx  x<wid-fx   wid
+        if(!check_outside_square(p, s) && p.getOverlap(inf) > 0){
+            p.ignore = true;
+        }
         if(check_outside_square(p, s) && p.getOverlap(inf) > 0 && !p.ignore){
-
-            // if(!(!check_outside_square(s.prevParticles.get(index),s) && p.getOverlap(inf) > 0)){
-
-            // }
             // if(!(p.x >= s.floorX + p.r && p.x <= s.wid - s.floorX - p.r && p.z >= s.floorZ + p.r && p.z <= s.dep - s.floorZ - p.r) && p.getOverlap(inf) > 0 ) {
-                // Nos traemos FN y FT
+            // Nos traemos FN y FT
             fn = getFN(p, inf, s);
             ft = getFT(p, inf, s);
             ft2 = getFT2(p, inf, s);
@@ -197,9 +196,7 @@ public class Forces {
                 System.out.println("ME fui a la mierda INF - " + p.getOverlap(inf));
                 System.exit(1);
             }
-        } else if(!check_outside_square(p, s) && p.getOverlap(inf) > 0){
-            p.ignore = true;
-        }
+        } 
 
         if( p.getOverlap(izq) > 0 ) {
             // Nos traemos FN y FT
@@ -303,6 +300,6 @@ public class Forces {
     }
     
     static boolean check_outside_square(Particle p, Sylo s){
-        return (p.x <= s.floorX || p.x >= s.wid - s.floorX) && (p.z <= s.floorZ || p.z  >= s.dep - s.floorZ);
+        return !(p.x >= s.floorX && p.x <= s.wid - s.floorX && p.z >= s.floorZ && p.z <= s.dep - s.floorZ);
     }
 }

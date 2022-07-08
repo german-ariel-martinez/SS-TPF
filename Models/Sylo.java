@@ -29,14 +29,14 @@ public class Sylo {
 
     public List<Particle> generateBorderParticles() {
         List<Particle> list = new ArrayList<>();
-        list.add(new Particle(0, 0, 0, 0, 0, 0, 0.0001, 0));
-        list.add(new Particle(wid, 0, 0, 0, 0, 0, 0.0001, 0));
-        list.add(new Particle(0, 0, dep, 0, 0, 0, 0.0001, 0));
-        list.add(new Particle(wid, 0, dep, 0, 0, 0, 0.0001, 0));
-        list.add(new Particle(0, len, 0, 0, 0, 0, 0.0001, 0));
-        list.add(new Particle(wid, len, 0, 0, 0, 0, 0.0001, 0));
-        list.add(new Particle(0, len, dep, 0, 0, 0, 0.0001, 0));
-        list.add(new Particle(wid, len, dep, 0, 0, 0, 0.0001, 0));
+        list.add(new Particle(0, 0, 0, 0, 0, 0, 0.0001, 0, false));
+        list.add(new Particle(wid, 0, 0, 0, 0, 0, 0.0001, 0, false));
+        list.add(new Particle(0, 0, dep, 0, 0, 0, 0.0001, 0, false));
+        list.add(new Particle(wid, 0, dep, 0, 0, 0, 0.0001, 0, false));
+        list.add(new Particle(0, len, 0, 0, 0, 0, 0.0001, 0, false));
+        list.add(new Particle(wid, len, 0, 0, 0, 0, 0.0001, 0, false));
+        list.add(new Particle(0, len, dep, 0, 0, 0, 0.0001, 0, false));
+        list.add(new Particle(wid, len, dep, 0, 0, 0, 0.0001, 0, false));
         return list;
     }
 
@@ -58,7 +58,7 @@ public class Sylo {
         double newy = p.y - dt * newVy + (dt*dt) * force.second / (2*p.m);
         double newz = p.z - dt * newVz + (dt*dt) * force.third / (2*p.m);
 
-        return new Particle(newx, newy, newz, newVx, newVy, newVz, p.r, p.m);
+        return new Particle(newx, newy, newz, newVx, newVy, newVz, p.r, p.m, false);
 
     }
 
@@ -97,14 +97,14 @@ public class Sylo {
 
 
         // Correcciones
-        Particle newp = new Particle(rx, ry, rz, predVx, predVy, predVz, current.r, current.m);
+        Particle newp = new Particle(rx, ry, rz, predVx, predVy, predVz, current.r, current.m, current.ignore);
         Triple<Double, Double, Double> newForce = Forces.calculateForce(newp, this,true, index);
 
         newVx= v0x + (1.0/3.0) * (newForce.first/current.m) * dt + (5.0/6.0) * (currentForce.first/current.m) * dt - (1.0/6.0) * (prevForce.first/current.m) * dt;
         newVy= v0y + (1.0/3.0) * (newForce.second/current.m) * dt + (5.0/6.0) * (currentForce.second/current.m) * dt - (1.0/6.0) * (prevForce.second/current.m) * dt; 
         newVz= v0z + (1.0/3.0) * (newForce.third/current.m) * dt + (5.0/6.0) * (currentForce.third/current.m) * dt - (1.0/6.0) * (prevForce.third/current.m) * dt; 
 
-        return new Particle(rx, ry, rz, newVx, newVy, newVz, current.r, current.m);
+        return new Particle(rx, ry, rz, newVx, newVy, newVz, current.r, current.m, current.ignore);
     }
 
     public Particle placeNewParticle(int seconds) {
@@ -126,21 +126,21 @@ public class Sylo {
             double rand_z = Math.random() * z_high;
             double rand_y = Math.random() * (y_high - y_low) + y_low;
 
-            Particle p = new Particle(rand_x, rand_y, rand_z, 0, 0, 0, rand_r, 0.01);
+            Particle p = new Particle(rand_x, rand_y, rand_z, 0, 0, 0, rand_r, 0.01, false);
 
             while(true) {
-                Particle sup = new Particle(p.x, len, p.z, 0, 0, 0, 0, 0);
-                Particle der = new Particle(wid, p.y, p.z, 0, 0, 0, 0, 0);
-                Particle izq = new Particle(0, p.y, p.z, 0, 0, 0, 0, 0);
-                Particle front = new Particle(p.x, p.y, dep, 0, 0, 0, 0, 0);
-                Particle back = new Particle(p.x, p.y, 0, 0, 0, 0, 0, 0);
-                Particle inf = new Particle(p.x, 0, p.z, 0, 0, 0, 0, 0);
+                Particle sup = new Particle(p.x, len, p.z, 0, 0, 0, 0, 0, false);
+                Particle der = new Particle(wid, p.y, p.z, 0, 0, 0, 0, 0, false);
+                Particle izq = new Particle(0, p.y, p.z, 0, 0, 0, 0, 0, false);
+                Particle front = new Particle(p.x, p.y, dep, 0, 0, 0, 0, 0, false);
+                Particle back = new Particle(p.x, p.y, 0, 0, 0, 0, 0, 0, false);
+                Particle inf = new Particle(p.x, 0, p.z, 0, 0, 0, 0, 0, false);
 
                 if(p.getOverlap(sup) >= 0 || p.getOverlap(inf) >= 0 || p.getOverlap(izq) >= 0 || p.getOverlap(der) >= 0 || p.getOverlap(front) >= 0 || p.getOverlap(back) >= 0){
                     rand_x = Math.random() * x_high;
                     rand_z = Math.random() * z_high;
                     rand_y = Math.random() * (y_high - y_low) + y_low;
-                    p = new Particle(rand_x, rand_y, rand_z, 0, 0, 0, rand_r, p.m);
+                    p = new Particle(rand_x, rand_y, rand_z, 0, 0, 0, rand_r, p.m, false);
                 } else {
                     break;
                 }
@@ -227,21 +227,21 @@ public class Sylo {
             double rand_y = Math.random() * y_high;
             double rand_z = Math.random() * z_high;
 
-            Particle p = new Particle(rand_x, rand_y, rand_z, 0, 0, 0, rand_r, 0.01);
+            Particle p = new Particle(rand_x, rand_y, rand_z, 0, 0, 0, rand_r, 0.01, false);
 
             while(true) {
-                Particle sup = new Particle(p.x, len, p.z, 0, 0, 0, 0, 0);
-                Particle der = new Particle(wid, p.y, p.z, 0, 0, 0, 0, 0);
-                Particle izq = new Particle(0, p.y, p.z, 0, 0, 0, 0, 0);
-                Particle front = new Particle(p.x, p.y, dep, 0, 0, 0, 0, 0);
-                Particle back = new Particle(p.x, p.y, 0, 0, 0, 0, 0, 0);
-                Particle inf = new Particle(p.x, 0, p.z, 0, 0, 0, 0, 0);
+                Particle sup = new Particle(p.x, len, p.z, 0, 0, 0, 0, 0, false);
+                Particle der = new Particle(wid, p.y, p.z, 0, 0, 0, 0, 0, false);
+                Particle izq = new Particle(0, p.y, p.z, 0, 0, 0, 0, 0, false);
+                Particle front = new Particle(p.x, p.y, dep, 0, 0, 0, 0, 0, false);
+                Particle back = new Particle(p.x, p.y, 0, 0, 0, 0, 0, 0, false);
+                Particle inf = new Particle(p.x, 0, p.z, 0, 0, 0, 0, 0, false);
 
                 if(p.getOverlap(sup) >= 0 || p.getOverlap(inf) >= 0 || p.getOverlap(izq) >= 0 || p.getOverlap(der) >= 0 || p.getOverlap(front) >= 0 || p.getOverlap(back) >= 0){
                     rand_x = Math.random() * x_high;
                     rand_y = Math.random() * y_high;
                     rand_z = Math.random() * z_high;
-                    p = new Particle(rand_x, rand_y, rand_z, 0, 0, 0, rand_r, p.m);
+                    p = new Particle(rand_x, rand_y, rand_z, 0, 0, 0, rand_r, p.m, false);
                 } else {
                     break;
                 }
