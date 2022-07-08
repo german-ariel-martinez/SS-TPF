@@ -3,6 +3,8 @@ package Models;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 public class Sylo {
     
     // Variables
@@ -105,5 +107,171 @@ public class Sylo {
         return new Particle(rx, ry, rz, newVx, newVy, newVz, current.r, current.m);
     }
 
+    public Particle placeNewParticle(int seconds) {
+        long currentTime= System.currentTimeMillis();
+        long end = currentTime + (seconds * 1000);
 
+        double radiusLow = 0.03/2;
+        double radiusHigh = 0.04/2;
+
+        double y_high = len;
+        double y_low = (3 * len)/5;
+        double x_high = wid;
+        double z_high = dep;
+        
+        while((currentTime = System.currentTimeMillis()) < end) {
+
+            double rand_r = (Math.random() * (radiusHigh-radiusLow)) + radiusLow;
+            double rand_x = Math.random() * x_high;
+            double rand_z = Math.random() * z_high;
+            double rand_y = Math.random() * (y_high - y_low) + y_low;
+
+            Particle p = new Particle(rand_x, rand_y, rand_z, 0, 0, 0, rand_r, 0.01);
+
+            while(true) {
+                Particle sup = new Particle(p.x, len, p.z, 0, 0, 0, 0, 0);
+                Particle der = new Particle(wid, p.y, p.z, 0, 0, 0, 0, 0);
+                Particle izq = new Particle(0, p.y, p.z, 0, 0, 0, 0, 0);
+                Particle front = new Particle(p.x, p.y, dep, 0, 0, 0, 0, 0);
+                Particle back = new Particle(p.x, p.y, 0, 0, 0, 0, 0, 0);
+                Particle inf = new Particle(p.x, 0, p.z, 0, 0, 0, 0, 0);
+
+                if(p.getOverlap(sup) >= 0 || p.getOverlap(inf) >= 0 || p.getOverlap(izq) >= 0 || p.getOverlap(der) >= 0 || p.getOverlap(front) >= 0 || p.getOverlap(back) >= 0){
+                    rand_x = Math.random() * x_high;
+                    rand_z = Math.random() * z_high;
+                    rand_y = Math.random() * (y_high - y_low) + y_low;
+                    p = new Particle(rand_x, rand_y, rand_z, 0, 0, 0, rand_r, p.m);
+                } else {
+                    break;
+                }
+            }
+
+            boolean flag = true;
+            for(Particle other : particles){
+                if(p.getDistance(other) >= 0){
+                    flag = false;
+                }
+            }
+            if(flag)
+                return p;
+        }
+        return null;
+    }
+
+    public void simulateUniverse(int seconds) {
+
+        List<Boolean> first = new ArrayList<>();
+
+        for(Particle p : particles)
+            first.add(true);
+
+        int step = 1;
+        int n = 50000;
+        int tOutput = 1000;
+
+        while((dt*step) < 5) {
+            int index = 0;
+            for(Particle p : particles) {
+                if(first.get(index)) {
+                    prevParticles.set(index, nextEuler(index));
+                    first.set(index, false);
+                }
+                Particle aux = particles.get(index);
+                Particle newParticle = nextBeeman(index);
+                //chequear si la particula se fue del sylo la vuelvo a poner
+                if(newParticle.x > wid || newParticle.x < 0 || newParticle.y > len || newParticle.z < 0 || newParticle.z > dep){
+                    System.out.println("ME FUI POR CUALQ");
+                    first.set(index, true);
+                    Particle ret = placeNewParticle(seconds);
+                    particles.set(index, ret);
+                    // reincerciones no deseadas
+                }
+                // TODO: chequear si se fue por la abertura, primero hay que probar sin abertura
+                else if(newParticle.y <= -len/10) {
+                    System.out.println("ME FUI POR ABAJO");
+                    first.set(index, true);
+                    Particle ret = placeNewParticle(seconds);
+                    particles.set(index, ret);
+                } else {
+                    particles.set(index, newParticle);
+                    prevParticles.set(index, aux);
+                }
+                index ++;
+                if(step % tOutput == 0) {
+                    OutputParser.writeUniverse(particles, borders, step*dt);
+                }
+            }
+            if((step) % n ==  0)
+                System.out.println(step*dt);
+            step++;
+        }
+    }
+
+    public void populate(double seconds) {
+
+        long currentTime= System.currentTimeMillis();
+        long end = currentTime + (int)(seconds * 1000);
+
+        double radiusLow = 0.03/2;
+        double radiusHigh = 0.04/2;
+
+        double y_high = len;
+        double x_high = wid;
+        double z_high = dep;
+        boolean first = true;
+        int i = 0;
+        // while((currentTime = System.currentTimeMillis()) < end) {
+        while(i < 50) {
+
+            double rand_r = (Math.random() * (radiusHigh-radiusLow)) + radiusLow;
+            double rand_x = Math.random() * x_high;
+            double rand_y = Math.random() * y_high;
+            double rand_z = Math.random() * z_high;
+
+            Particle p = new Particle(rand_x, rand_y, rand_z, 0, 0, 0, rand_r, 0.01);
+
+            while(true) {
+                Particle sup = new Particle(p.x, len, p.z, 0, 0, 0, 0, 0);
+                Particle der = new Particle(wid, p.y, p.z, 0, 0, 0, 0, 0);
+                Particle izq = new Particle(0, p.y, p.z, 0, 0, 0, 0, 0);
+                Particle front = new Particle(p.x, p.y, dep, 0, 0, 0, 0, 0);
+                Particle back = new Particle(p.x, p.y, 0, 0, 0, 0, 0, 0);
+                Particle inf = new Particle(p.x, 0, p.z, 0, 0, 0, 0, 0);
+
+                if(p.getOverlap(sup) >= 0 || p.getOverlap(inf) >= 0 || p.getOverlap(izq) >= 0 || p.getOverlap(der) >= 0 || p.getOverlap(front) >= 0 || p.getOverlap(back) >= 0){
+                    rand_x = Math.random() * x_high;
+                    rand_y = Math.random() * y_high;
+                    rand_z = Math.random() * z_high;
+                    p = new Particle(rand_x, rand_y, rand_z, 0, 0, 0, rand_r, p.m);
+                } else {
+                    break;
+                }
+            }
+            if(first) {
+                particles.add(p);
+                i++;
+                first = false;
+            } else {
+                boolean flag = true;
+                for(Particle other : particles){
+                    if(p.getOverlap(other) >= 0){
+                        flag = false;
+                    }
+                }
+                if(flag){
+                    particles.add(p);
+                    i++;
+                }
+            }
+        }
+
+        int in = 0;
+        for(Particle part : particles){
+            prevParticles.add(nextEuler(in));
+            in++;
+        }
+        
+        OutputParser.writeUniverse(particles, borders, 0);
+        System.out.println("Finalizo el populate - " + particles.size() + " Particulas");
+    }
 }

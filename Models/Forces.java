@@ -143,10 +143,21 @@ public class Forces {
         //
         //
         // TODO: REVISAR ESTO FALTA USAR EL FLOORZ
-        //
-        //
+        // TODO: Aca no seria armar por ejemplo el cuadrado y si no esta en cuadrado aplicas fuerza
+        // y sino que siga. Y este cuadrado seria usado X e Y, no Z si no entiendo mal.
+        // 
         ////////////////////////////////////////////
-        if( ( p.x <= s.floorX || p.x >= s.wid - s.floorX ) && p.getOverlap(inf) > 0 ) {
+        // dep
+        // ____________________ 
+        // |                  |
+        // |     ________     | z<dep-fz
+        // |    |        |    |
+        // |    |        |    |
+        // |    |________|    | z>fz
+        // |                  |
+        // |__________________|
+        // 0  x>fx  x<wid-fx   wid
+        if(!(p.x > s.floorX && p.x < s.wid - s.floorX && p.z > s.floorZ && p.z < s.dep - s.floorZ) && p.getOverlap(inf) > 0 ) {
             // Nos traemos FN y FT
             fn = getFN(p, inf, s);
             ft = getFT(p, inf, s);
@@ -249,7 +260,7 @@ public class Forces {
             fzT += fn * enz + ft * enz + ft2 * et2.third;
         }
         fyT -= 9.8 * (p.m);
-        return new Triple<Double,Double, Double>(fxT, fyT, fxT);
+        return new Triple<Double,Double, Double>(fxT, fyT, fzT);
     }
 
 
