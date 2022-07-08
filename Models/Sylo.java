@@ -111,11 +111,11 @@ public class Sylo {
         long currentTime= System.currentTimeMillis();
         long end = currentTime + (seconds * 1000);
 
-        double radiusLow = 0.03/2;
-        double radiusHigh = 0.04/2;
+        double radiusLow = 0.04/2;
+        double radiusHigh = 0.05/2;
 
         double y_high = len;
-        double y_low = (3 * len)/5;
+        double y_low = (2 * len)/5;
         double x_high = wid;
         double z_high = dep;
         
@@ -148,12 +148,13 @@ public class Sylo {
 
             boolean flag = true;
             for(Particle other : particles){
-                if(p.getDistance(other) >= 0){
+                if(p.getOverlap(other) >= 0){
                     flag = false;
                 }
             }
-            if(flag)
+            if(flag) {
                 return p;
+            }
         }
         return null;
     }
@@ -180,7 +181,6 @@ public class Sylo {
                 Particle newParticle = nextBeeman(index);
                 //chequear si la particula se fue del sylo la vuelvo a poner
                 if(newParticle.x > wid || newParticle.x < 0 || newParticle.y > len || newParticle.z < 0 || newParticle.z > dep){
-                    System.out.println("ME FUI POR CUALQ");
                     first.set(index, true);
                     Particle ret = placeNewParticle(seconds);
                     particles.set(index, ret);
@@ -188,7 +188,6 @@ public class Sylo {
                 }
                 // TODO: chequear si se fue por la abertura, primero hay que probar sin abertura
                 else if(newParticle.y <= -len/10) {
-                    System.out.println("ME FUI POR ABAJO");
                     first.set(index, true);
                     Particle ret = placeNewParticle(seconds);
                     particles.set(index, ret);
@@ -212,8 +211,8 @@ public class Sylo {
         long currentTime= System.currentTimeMillis();
         long end = currentTime + (int)(seconds * 1000);
 
-        double radiusLow = 0.03/2;
-        double radiusHigh = 0.04/2;
+        double radiusLow = 0.04/2;
+        double radiusHigh = 0.05/2;
 
         double y_high = len;
         double x_high = wid;
@@ -221,7 +220,7 @@ public class Sylo {
         boolean first = true;
         int i = 0;
         // while((currentTime = System.currentTimeMillis()) < end) {
-        while(i < 50) {
+        while(i < 200) {
 
             double rand_r = (Math.random() * (radiusHigh-radiusLow)) + radiusLow;
             double rand_x = Math.random() * x_high;
