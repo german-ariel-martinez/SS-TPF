@@ -186,7 +186,6 @@ public class Sylo {
                     particles.set(index, ret);
                     // reincerciones no deseadas
                 }
-                // TODO: chequear si se fue por la abertura, primero hay que probar sin abertura
                 else if(newParticle.y <= -len/10) {
                     first.set(index, true);
                     Particle ret = placeNewParticle(seconds);
@@ -200,6 +199,102 @@ public class Sylo {
                     OutputParser.writeUniverse(particles, borders, step*dt);
                 }
             }
+            if((step) % n ==  0)
+                System.out.println(step*dt);
+            step++;
+        }
+    }
+
+    public void simulateEJ1_2(int seconds, String fn) {
+
+        List<Boolean> first = new ArrayList<>();
+
+        for(Particle p : particles)
+            first.add(true);
+
+        int step = 1;
+        int n = 50000;
+        int printcsv = 10000;
+        int escape_counter = 0;
+        while((dt*step) < 5) {
+            int index = 0;
+            for(Particle p : particles) {
+                if(first.get(index)) {
+                    prevParticles.set(index, nextEuler(index));
+                    first.set(index, false);
+                }
+                Particle aux = particles.get(index);
+                Particle newParticle = nextBeeman(index);
+                if(newParticle.x > wid || newParticle.x < 0 || newParticle.y > len || newParticle.z < 0 || newParticle.z > dep){
+                    escape_counter++;
+                    first.set(index, true);
+                    Particle ret = placeNewParticle(seconds);
+                    particles.set(index, ret);
+                    // reincerciones no deseadas
+                }
+                else if(newParticle.y <= -len/10) {
+                    escape_counter++;
+                    first.set(index, true);
+                    Particle ret = placeNewParticle(seconds);
+                    particles.set(index, ret);
+                } else {
+                    particles.set(index, newParticle);
+                    prevParticles.set(index, aux);
+                }
+                index ++;
+            }
+            if(step % printcsv == 0){
+                OutputParser.parseEj1_2(step*dt, escape_counter, fn);
+                escape_counter = 0;
+            }
+            if((step) % n ==  0)
+                System.out.println(step*dt);
+            step++;
+        }
+    }
+
+    public void simulateEJ3_4(int seconds, String fn) {
+
+        List<Boolean> first = new ArrayList<>();
+
+        for(Particle p : particles)
+            first.add(true);
+
+        int step = 1;
+        int n = 50000;
+        int printcsv = 10000;
+        double ke = 0;
+        OutputParser.parseEj3_4(0, 0, fn);
+        while((dt*step) < 10) {
+            int index = 0;
+            for(Particle p : particles) {
+                if(first.get(index)) {
+                    prevParticles.set(index, nextEuler(index));
+                    first.set(index, false);
+                }
+                Particle aux = particles.get(index);
+                Particle newParticle = nextBeeman(index);
+                if(newParticle.x > wid || newParticle.x < 0 || newParticle.y > len || newParticle.z < 0 || newParticle.z > dep){
+                    first.set(index, true);
+                    Particle ret = placeNewParticle(seconds);
+                    particles.set(index, ret);
+                    // reincerciones no deseadas
+                }
+                else if(newParticle.y <= -len/10) {
+                    first.set(index, true);
+                    Particle ret = placeNewParticle(seconds);
+                    particles.set(index, ret);
+                } else {
+                    ke += 0.5 * newParticle.m * Math.pow(newParticle.getVelocity(),2);
+                    particles.set(index, newParticle);
+                    prevParticles.set(index, aux);
+                }
+                index ++;
+            }
+            if(step % printcsv == 0){
+                OutputParser.parseEj3_4(step*dt, ke, fn);
+            }
+            ke = 0;
             if((step) % n ==  0)
                 System.out.println(step*dt);
             step++;
@@ -220,7 +315,7 @@ public class Sylo {
         boolean first = true;
         int i = 0;
         // while((currentTime = System.currentTimeMillis()) < end) {
-        while(i < 200) {
+        while(i < 300) {
 
             double rand_r = (Math.random() * (radiusHigh-radiusLow)) + radiusLow;
             double rand_x = Math.random() * x_high;

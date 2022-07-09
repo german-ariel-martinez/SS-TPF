@@ -39,21 +39,6 @@ public class OutputParser {
         }
     }
 
-    // public static void parseEj1(double dt, int count, String filename){
-    //     try {
-    //         StringBuilder dump = new StringBuilder("");
-    //         if(firstEj1 == true){
-    //             dump.append("Dt,N\n");
-    //             firstEj1 = false;
-    //         }
-    //         dump.append(dt).append(",").append(count).append("\n");
-    //         appendToEndOfFile(filename,dump.toString());
-    //     } catch (IOException e) {
-    //         System.out.println("An error occurred.");
-    //         e.printStackTrace();
-    //     }
-    // }
-
     public static void parseEj1_2(double dt, int count, String filename){
         try {
             StringBuilder dump = new StringBuilder("");
